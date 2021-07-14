@@ -42,7 +42,7 @@ class Draggable {
     } else {
       fill(255, 0, 0);
     }
-    ellipse(this.x, this.y, this.w, this.h);
+    ellipse(this.x, this.y, this.w, this.w);
   }
 
   pressed() {
@@ -52,11 +52,13 @@ class Draggable {
       // If so, keep track of relative location of click to corner of rectangle
       this.offsetX = this.x - mouseX;
       this.offsetY = this.y - mouseY;
+      this.w*=1.2;
     }
   }
 
   released() {
     // Quit dragging
     this.dragging = false;
+    this.w = this.h;
   }
 }
