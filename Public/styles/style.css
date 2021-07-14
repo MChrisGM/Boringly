@@ -1,0 +1,13 @@
+body {
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    background: rgb(51,51,51);
+    margin: 0;
+    padding: 0;
+    position: fixed;
+}
+canvas {
+    margin: 0;
+    padding: 0;
+}
