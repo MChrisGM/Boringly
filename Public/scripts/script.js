@@ -5,16 +5,16 @@ let final_pos;
 let solved = false;
 let score = 0;
 let highscore;
-let size_pct = 0.15;
-let trigger_pct = 0.75;
+let size_pct = 0.20;
+let trigger_pct = 0.80;
 let size;
 
 let time = 2000;
-let time_pct = 0.98;
+let time_pct = 0.99;
 
 let startFade = false;
 let fade;
-let fade_pct = 25;
+let fade_pct = 15;
 let fadeAmount = fade_pct;
 
 var x,startAt;
@@ -84,7 +84,7 @@ function draw() {
     fadeAmount=fade_pct;
   }
  
-  if (fade>=255){
+  if (fade>=240){
     fadeAmount=-fade_pct;
     startFade = false;
   }
@@ -185,22 +185,7 @@ function angle(originX, originY, targetX, targetY) {
 }
 
 function windowResized() {
-  canvas = createCanvas(innerWidth, innerHeight);
-  if(innerWidth > innerHeight){
-    size = height;
-  }else{
-    size = width;
-  }
-  background(51);
-  generate_pos();
-  score = parseInt(localStorage.getItem('score')) || 0;
-  if(score > 0){
-    for(let i = 0; i<score;i++){
-      time*=time_pct;
-    }
-  }
-  highscore = parseInt(localStorage.getItem('highscore')) || 0;
-  fade = 0;
+  location.reload();
 }
 
 window.addEventListener("scroll", (e) => {
