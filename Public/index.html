@@ -2,8 +2,8 @@
 
 <head>
     <link rel="apple-touch-icon" href="assets/icon.png">
-    <link rel="shortcut icon" type="image/jpg" href="assets/icon.png"/>
-    
+    <link rel="shortcut icon" type="image/jpg" href="assets/icon.png" />
+    <title>Boringly</title>
     <link href="assets/splashscreens/iphone5_splash.png"
         media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
         rel="apple-touch-startup-image" />
@@ -42,7 +42,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="HandheldFriendly" content="true" />
     <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">
-    
+
 
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="styles/addtohomescreen.css">
@@ -53,8 +53,23 @@
     <script type="text/javascript" src="scripts/script.js"></script>
 
 </head>
-<body>
-    
+
+<body onload="analytics()">
+    <script>
+        async function analytics(){
+            let http = new XMLHttpRequest();
+            let url = '/count';
+            function text(url) {return fetch(url).then(res => res.text());}
+            let an = await text('https://www.cloudflare.com/cdn-cgi/trace').then(data => {
+                return data.match(/[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}/)[0];
+            });
+            http.open('POST', url, true);
+            http.setRequestHeader('Content-type', 'application/json');
+            http.setRequestHeader('user',an)
+            http.send();
+        }
+    </script>
+
 </body>
 
 </html>
