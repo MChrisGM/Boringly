@@ -8,14 +8,14 @@ let counter = 0;
 app.use(express.static('Public'));
 
 app.post('/count', function(req,res,next){
-    let user = req?.headers?.user || null;
+    let user = req.headers.user || null;
     if(user){
         db.run(`INSERT INTO users VALUES(?)`, [user], function(err) {
             if (err) {
               return console.log(err.message);
             }
             counter++;
-            console.log(`A row has been inserted with rowid ${this.lastID}`);
+            console.log(`${user} has been inserted with rowid ${this.lastID}`);
           });
     }
     console.log(counter);
