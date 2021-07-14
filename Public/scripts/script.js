@@ -7,6 +7,7 @@ let score = 0;
 let highscore;
 let size_pct = 0.15;
 let trigger_pct = 0.75;
+let size;
 
 let time = 2000;
 let time_pct = 0.98;
@@ -21,6 +22,11 @@ var x,startAt;
 function setup() {
   addToHomescreen();
   canvas = createCanvas(innerWidth, innerHeight);
+  if(innerWidth > innerHeight){
+    size = height;
+  }else{
+    size = width;
+  }
   background(51);
   generate_pos();
   score = parseInt(localStorage.getItem('score')) || 0;
@@ -30,17 +36,17 @@ function setup() {
     }
   }
   highscore = parseInt(localStorage.getItem('highscore')) || 0;
-  fade = 0
+  fade = 0;
   frameRate(60);
 }
 
 function draw() {
   background(51);
 
-  stroke(255, 0, 0);
-  strokeWeight(10);
-
   x = map(millis(), startAt, startAt + time, 0, width);
+  stroke(255,0,0);
+  strokeWeight(20);
+  fill(255,0,0);
   line(0, 0, width - x, 0);
   
   drawShapes();
@@ -49,7 +55,7 @@ function draw() {
   shape.update();
   shape.show();
 
-  if (createVector(shape.x, shape.y).dist(final_pos) < size_pct * width * trigger_pct) {
+  if (createVector(shape.x, shape.y).dist(final_pos) < size_pct * size * trigger_pct) {
     solved = true;
   }
 
@@ -66,7 +72,7 @@ function draw() {
 
   
 
-  if (width - x < 0.1){
+  if (width - x < 0.01){
     score = 0;
     localStorage.setItem('score', score);
     startFade = true;
@@ -87,6 +93,7 @@ function draw() {
     fade += fadeAmount; 
   }
 
+  noStroke();
   fill(0,150,0,fade);
   rectMode(CORNER);
   rect(0,0,width,height);
@@ -98,7 +105,7 @@ function generate_pos() {
   while (point.dist(final_pos) < width * size_pct) {
     final_pos = createVector((size_pct / 2 + Math.random()) * width * (1 - size_pct), (size_pct / 2 + Math.random()) * height * (1 - size_pct));
   }
-  shape = new Draggable(point.x, point.y, width * size_pct, width * size_pct);
+  shape = new Draggable(point.x, point.y, size * size_pct, size * size_pct);
 
   startAt = millis();
 }
@@ -110,23 +117,23 @@ function drawShapes() {
   stroke(0);
 
   textAlign(CENTER);
-  textSize(width * 0.3);
+  textSize(size * 0.3);
   fill(90);
   text('' + score, width / 2, height / 2);
 
-  textSize(width * 0.08);
+  textSize(size * 0.08);
   fill(90);
-  text('Seconds: ' + (time/1000).toPrecision(3), width / 2, height * 2/ 3);
+  text('Seconds: ' + (time/1000).toPrecision(3), width / 2, height * 3/ 4);
 
-  textSize(width * 0.08);
+  textSize(size * 0.08);
   fill(90);
-  text('Highscore: ' + highscore, width / 2, height / 3);
+  text('Highscore: ' + highscore, width / 2, height / 4);
 
   noStroke();
   fill(120);
-  ellipse(final_pos.x, final_pos.y, width * size_pct, width * size_pct);
+  ellipse(final_pos.x, final_pos.y, size * size_pct, size * size_pct);
   fill(120);
-  ellipse(point.x, point.y, width * size_pct, width * size_pct);
+  ellipse(point.x, point.y, size * size_pct, size * size_pct);
 
   angleMode(DEGREES);
   push();
@@ -134,12 +141,12 @@ function drawShapes() {
   translate((point.x + final_pos.x) / 2, (point.y + final_pos.y) / 2);
   rotate(angle(point.x, point.y, final_pos.x, final_pos.y));
   fill(120);
-  rect(0, 0, point.dist(final_pos), width * size_pct);
+  rect(0, 0, point.dist(final_pos), size * size_pct);
   pop();
 
   stroke(0);
   fill(255, 255, 255);
-  ellipse(final_pos.x, final_pos.y, width * size_pct, width * size_pct);
+  ellipse(final_pos.x, final_pos.y, size * size_pct, size * size_pct);
 }
 
 function touchStarted() {
@@ -150,7 +157,20 @@ function touchStarted() {
 function touchEnded() {
   shape.released();
   if (!solved) {
-    shape = new Draggable(point.x, point.y, width * size_pct, width * size_pct);
+    shape = new Draggable(point.x, point.y, size * size_pct, size * size_pct);
+  }
+  return false;
+}
+
+function mousePressed() {
+  shape.pressed();
+  return false;
+}
+
+function mouseReleased() {
+  shape.released();
+  if (!solved) {
+    shape = new Draggable(point.x, point.y, size * size_pct, size * size_pct);
   }
   return false;
 }
@@ -166,8 +186,21 @@ function angle(originX, originY, targetX, targetY) {
 
 function windowResized() {
   canvas = createCanvas(innerWidth, innerHeight);
+  if(innerWidth > innerHeight){
+    size = height;
+  }else{
+    size = width;
+  }
   background(51);
   generate_pos();
+  score = parseInt(localStorage.getItem('score')) || 0;
+  if(score > 0){
+    for(let i = 0; i<score;i++){
+      time*=time_pct;
+    }
+  }
+  highscore = parseInt(localStorage.getItem('highscore')) || 0;
+  fade = 0;
 }
 
 window.addEventListener("scroll", (e) => {
