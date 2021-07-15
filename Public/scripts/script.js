@@ -27,6 +27,7 @@ let settingsOn = false;
 let settingsTime;
 
 let settingsModel = {
+  v:1,
   showText: true,
   startTime: 2,
   modes: { 0: 'freerun', 1: 'timed' },
@@ -37,6 +38,9 @@ let settings;
 function loadSettings() {
   if (localStorage.hasOwnProperty('settings')) {
     settings = JSON.parse(localStorage.getItem('settings'));
+    if(!settings.v || settings.v < settingsModel.v){
+      settings = JSON.parse(JSON.stringify(settingsModel));
+    }
   } else {
     settings = JSON.parse(JSON.stringify(settingsModel));
   }
@@ -80,7 +84,7 @@ function draw() {
     }
 
   }
-  if (settings.modes[settings.mode] == 'timed') {
+  if (settings.modes[settings.mode] == 'timed' && score != 0) {
     stroke(255, 0, 0);
     strokeWeight(20);
     fill(255, 0, 0);
@@ -124,7 +128,7 @@ function draw() {
     time = 2000;
   }
 
-  if (startFade) {
+  if (startFade && score != 0) {
     fadeAmount = fade_pct;
   }
 
