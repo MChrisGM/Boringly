@@ -10,7 +10,7 @@ app.use(express.static('Public'));
 app.post('/count', function(req,res,next){
     let user = req.headers.user || null;
     if(user){
-        db.run(`INSERT INTO users VALUES(?)`, [user], function(err) {
+        db.run(`INSERT INTO users(user) VALUES(?)`, [user], function(err) {
             if (err) {
               return console.log(err.message);
             }
@@ -37,5 +37,7 @@ let db = new sqlite3.Database('./db/data.db', (err) => {
   });
 
   db.run(`CREATE TABLE IF NOT EXISTS users (
-	        user TEXT NOT NULL PRIMARY KEY
-        ) WITHOUT ROWID;`);
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+	        user TEXT NOT NULL
+        );`);
