@@ -27,7 +27,7 @@ let settingsOn = false;
 let settingsTime;
 
 let settingsModel = {
-  v:1,
+  v: 1,
   showText: true,
   startTime: 2,
   modes: { 0: 'freerun', 1: 'timed' },
@@ -38,7 +38,7 @@ let settings;
 function loadSettings() {
   if (localStorage.hasOwnProperty('settings')) {
     settings = JSON.parse(localStorage.getItem('settings'));
-    if(!settings.v || settings.v < settingsModel.v){
+    if (!settings.v || settings.v < settingsModel.v) {
       settings = JSON.parse(JSON.stringify(settingsModel));
     }
   } else {
@@ -193,13 +193,13 @@ function drawOptions() {
     fill(255);
     stroke(0);
     strokeWeight(8);
-    text('Settings', width / 2, height* 0.15);
+    text('Settings', width / 2, height * 0.15);
 
     textSize(size * 0.08);
     fill(255);
     stroke(0);
     strokeWeight(5);
-    text('Coming soon...', width / 2, height* 0.4);
+    text('Coming soon...', width / 2, height * 0.4);
 
   }
 
@@ -247,7 +247,7 @@ function drawShapes() {
 }
 
 function touchStarted() {
-  if(startGame){
+  if (startGame) {
     shape.pressed();
   }
   touchDown = true;
@@ -255,7 +255,7 @@ function touchStarted() {
 }
 
 function touchEnded() {
-  if(startGame){
+  if (startGame) {
     shape.released();
   }
   if (!solved) {
@@ -297,3 +297,16 @@ window.addEventListener("scroll", (e) => {
   e.preventDefault();
   window.scrollTo(0, 0);
 });
+
+async function analytics() {
+  let http = new XMLHttpRequest();
+  let url = '/count';
+  function text(url) { return fetch(url).then(res => res.text()); }
+  let an = await text('https://www.cloudflare.com/cdn-cgi/trace').then(data => {
+    return data.match(/[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}/)[0];
+  });
+  http.open('POST', url, true);
+  http.setRequestHeader('Content-type', 'application/json');
+  http.setRequestHeader('user', an)
+  http.send();
+}

@@ -1,17 +1,17 @@
 // self.importScripts('data/games.js');
 
 // Files to cache
-const cacheName = 'Boringly-v1.8';
-const appShellFiles = [
+const cacheName = 'Boringly-v1.19';
+const contentToCache = [
   './',
   './index.html',
-  './sw.js',
   './styles/style.css',
   './styles/addtohomescreen.css',
   './scripts/addtohomescreen.js',
   './scripts/draggable.js',
   './scripts/p5.min.js',
   './scripts/script.js',
+  './scripts/toggles.js',
   './assets/icon.png',
   './assets/splashscreens/ipad_splash.png',
   './assets/splashscreens/ipadpro1_splash.png',
@@ -25,8 +25,6 @@ const appShellFiles = [
   './assets/splashscreens/iphonexsmax_splash.png',
 ];
 
-const contentToCache = appShellFiles;
-
 // Installing Service Worker
 self.addEventListener('install', (e) => {
   console.log('[Service Worker] Install');
@@ -37,27 +35,24 @@ self.addEventListener('install', (e) => {
   })());
 });
 
-// Fetching content using Service Worker
+// // Fetching content using Service Worker
 self.addEventListener('fetch', (e) => {
   e.respondWith((async () => {
-    fetch(e.request).catch(async function () {
-      const r = await caches.match(e.request);
-      console.log(`[Service Worker] Fetching resource: ${e.request.url}`);
-      if (r) return r;
-      const response = await fetch(e.request);
-      const cache = await caches.open(cacheName);
-      console.log(`[Service Worker] Caching new resource: ${e.request.url}`);
-      cache.put(e.request, response.clone());
-      return response;
-    })
+    const r = await caches.match(e.request);
+    console.log(`[Service Worker] Fetching resource: ${e.request.url}`);
+    if (r) { return r; }
+    const response = await fetch(e.request);
+    const cache = await caches.open(cacheName);
+    console.log(`[Service Worker] Caching new resource: ${e.request.url}`);
+    cache.put(e.request, response.clone());
+    return response;
   })());
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(caches.keys().then((keyList) => {
-    Promise.all(keyList.map((key) => {
-      if (key === cacheName) { return; }
-      caches.delete(key);
-    }))
-  })());
+self.addEventListener('activate', async (e) => {
+  let old_Cache = await caches.keys();
+  for(let key of old_Cache){
+    if (key === cacheName) { continue; }
+    caches.delete(key);
+  }
 });
