@@ -60,7 +60,7 @@
         window.onload = async function () {
             // Registering Service Worker
             if ('serviceWorker' in navigator) {
-                registerValidSW('./sw.js');
+                registerValidSW('sw.js');
             }
             await analytics();
         }
