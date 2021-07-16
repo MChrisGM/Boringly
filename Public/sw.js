@@ -1,7 +1,7 @@
 // self.importScripts('data/games.js');
 
 // Files to cache
-const cacheName = 'Boringly-v1.1';
+const cacheName = 'Boringly-v1.3';
 const appShellFiles = [
   './',
   './index.html',
