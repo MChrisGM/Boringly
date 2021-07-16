@@ -55,11 +55,14 @@
 
 </head>
 
-<body onload="analytics()">
+<body>
     <script>
-        // Registering Service Worker
-        if ('serviceWorker' in navigator) {
-            registerValidSW('./sw.js');
+        window.onload = async function () {
+            // Registering Service Worker
+            if ('serviceWorker' in navigator) {
+                registerValidSW('./sw.js');
+            }
+            await analytics();
         }
         async function analytics() {
             let http = new XMLHttpRequest();
@@ -102,7 +105,7 @@
                 .catch(error => {
                     reportError('Error during service worker registration:', error);
                 });
-            }
+        }
     </script>
 
 </body>
