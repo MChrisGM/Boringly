@@ -23,11 +23,8 @@ const appShellFiles = [
   './Public/assets/splashscreens/iphonexr_splash.png',
   './Public/assets/splashscreens/iphonexsmax_splash.png',
 ];
-const gamesImages = [];
-// for (let i = 0; i < games.length; i++) {
-//   gamesImages.push(`data/img/${games[i].slug}.jpg`);
-// }
-const contentToCache = appShellFiles.concat(gamesImages);
+
+const contentToCache = appShellFiles;
 
 // Installing Service Worker
 self.addEventListener('install', (e) => {
@@ -50,5 +47,14 @@ self.addEventListener('fetch', (e) => {
     console.log(`[Service Worker] Caching new resource: ${e.request.url}`);
     cache.put(e.request, response.clone());
     return response;
+  })());
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil(caches.keys().then((keyList) => {
+    Promise.all(keyList.map((key) => {
+      if (key === cacheName) { return; }
+      caches.delete(key);
+    }))
   })());
 });
