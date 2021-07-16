@@ -1,0 +1,9 @@
+{
+    "name": "Boringly",
+    "short_name": "Boringly",
+    "description": "Just a boring game",
+    "start_url": "./index.html",
+    "display": "fullscreen",
+    "theme_color": "#515151",
+    "background_color": "#515151"
+}
