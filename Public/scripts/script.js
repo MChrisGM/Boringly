@@ -128,23 +128,23 @@ function draw() {
     time = 2000;
   }
 
-  if (startFade && score != 0) {
-    fadeAmount = fade_pct;
-  }
+  // if (startFade && score != 0) {
+  //   fadeAmount = fade_pct;
+  // }
 
-  if (fade >= 240) {
-    fadeAmount = -fade_pct;
-    startFade = false;
-  }
+  // if (fade >= 240) {
+  //   fadeAmount = -fade_pct;
+  //   startFade = false;
+  // }
 
-  if (startFade || fade >= 0) {
-    fade += fadeAmount;
-  }
+  // if (startFade || fade >= 0) {
+  //   fade += fadeAmount;
+  // }
 
-  noStroke();
-  fill(0, 150, 0, fade);
-  rectMode(CORNER);
-  rect(0, 0, width, height);
+  // noStroke();
+  // fill(0, 150, 0, fade);
+  // rectMode(CORNER);
+  // rect(0, 0, width, height);
 
 }
 
