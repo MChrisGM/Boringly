@@ -56,6 +56,10 @@
 
 <body onload="analytics()">
     <script>
+        // Registering Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
         async function analytics(){
             let http = new XMLHttpRequest();
             let url = '/count';
