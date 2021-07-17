@@ -27,13 +27,16 @@ let settingsOn = false;
 let settingsTime;
 
 let settingsModel = {
-  v: 1,
+  v: 1.4,
   showText: true,
-  startTime: 2,
-  modes: { 0: 'freerun', 1: 'timed' },
+  startTime: 0,
+  startTimes: { 0: 2, 1: 5, 2: 10 },
+  modes: { 0: 'Freerun', 1: 'Timed' },
   mode: 1
 };
 let settings;
+
+let toggles = {};
 
 function loadSettings() {
   if (localStorage.hasOwnProperty('settings')) {
@@ -62,29 +65,35 @@ function setup() {
   saveSettings();
   generate_pos(false);
   score = parseInt(localStorage.getItem('score')) || 0;
+  time = settings.startTimes[settings.startTime]*1000;
   if (score > 0) {
     for (let i = 0; i < score; i++) {
       time *= time_pct;
     }
   }
-  highscore = parseInt(localStorage.getItem('highscore')) || 0;
+  if(!localStorage.getItem('highscore').startsWith('{')){
+    highscore = {2:parseInt(localStorage.getItem('highscore')) || 0,5:0,10:0};
+  }else{
+    highscore = JSON.parse(localStorage.getItem('highscore'));
+  }
+  localStorage.setItem('highscore', JSON.stringify(highscore));
   fade = 0;
   frameRate(60);
 }
 
 function draw() {
   background(51);
-  if (startGame && score != 0 && settings.modes[settings.mode] == 'timed') {
+  if (startGame && score != 0 && settings.modes[settings.mode] == 'Timed') {
     x = map(millis(), startAt, startAt + time, 0, width);
   } else {
-    if (settings.modes[settings.mode] == 'freerun') {
+    if (settings.modes[settings.mode] == 'Freerun') {
       x = 0;
     } else {
       x = map(millis(), startAt + (millis() - settingsTime), startAt + (millis() - settingsTime) + time, 0, width);
     }
 
   }
-  if (settings.modes[settings.mode] == 'timed' && score != 0) {
+  if (settings.modes[settings.mode] == 'Timed' && score != 0) {
     stroke(255, 0, 0);
     strokeWeight(20);
     fill(255, 0, 0);
@@ -108,10 +117,11 @@ function draw() {
     score += 1;
     localStorage.setItem('score', score);
     time *= time_pct;
-    if (settings.modes[settings.mode] == 'timed') {
-      if (score > highscore) {
-        localStorage.setItem('highscore', score);
-        highscore = score;
+    if (settings.modes[settings.mode] == 'Timed') {
+      if (score > highscore[settings.startTimes[settings.startTime]]) {
+        highscore[settings.startTimes[settings.startTime]] = score;
+        localStorage.setItem('highscore', JSON.stringify(highscore));
+        
       }
     }
     generate_pos(true);
@@ -125,26 +135,8 @@ function draw() {
     localStorage.setItem('score', score);
     startFade = true;
     generate_pos(true);
-    time = 2000;
+    time = settings.startTimes[settings.startTime]*1000;
   }
-
-  // if (startFade && score != 0) {
-  //   fadeAmount = fade_pct;
-  // }
-
-  // if (fade >= 240) {
-  //   fadeAmount = -fade_pct;
-  //   startFade = false;
-  // }
-
-  // if (startFade || fade >= 0) {
-  //   fade += fadeAmount;
-  // }
-
-  // noStroke();
-  // fill(0, 150, 0, fade);
-  // rectMode(CORNER);
-  // rect(0, 0, width, height);
 
 }
 
@@ -164,9 +156,9 @@ function drawOptions() {
 
   stroke(180);
   strokeWeight(5);
-  line(width * 0.95, height * 0.02, width * 0.98, height * 0.02);
-  line(width * 0.95, height * 0.03, width * 0.98, height * 0.03);
-  line(width * 0.95, height * 0.04, width * 0.98, height * 0.04);
+  line(width * 0.93, height * 0.02, width * 0.98, height * 0.02);
+  line(width * 0.93, height * 0.03, width * 0.98, height * 0.03);
+  line(width * 0.93, height * 0.04, width * 0.98, height * 0.04);
 
   if (touchDown && mouseX > width * 0.95 && mouseY < height * 0.04 && !settingsOn) {
     settingsOn = true;
@@ -195,12 +187,47 @@ function drawOptions() {
     strokeWeight(8);
     text('Settings', width / 2, height * 0.15);
 
-    textSize(size * 0.08);
+    textSize(size * 0.05);
     fill(255);
     stroke(0);
-    strokeWeight(5);
-    text('Coming soon...', width / 2, height * 0.4);
+    strokeWeight(3);
+    textAlign(LEFT);
+    text('Show background text', width * 0.15, height * 0.3 + (size * 0.05) / 2);
 
+    toggles['showText'] = new Toggle('showText', createVector(width * 0.8, height * 0.3), createVector(size * 0.1, size * 0.05), settings.showText, function () {
+      settings.showText = !settings.showText;
+      saveSettings();
+    }, 'toggle', []).display();
+
+
+    textSize(size * 0.05);
+    fill(255);
+    stroke(0);
+    strokeWeight(3);
+    textAlign(LEFT);
+    text('Mode', width * 0.15, height * 0.4 + (size * 0.05) / 2);
+
+    toggles['mode'] = new Toggle('mode', createVector(width * 0.8, height * 0.4), createVector(size * 0.3, size * 0.05), settings.mode, function () {
+      settings.mode = this.output;
+      saveSettings();
+      score = 0;
+
+    }, 'options', Object.values(settings.modes)).display();
+
+
+    textSize(size * 0.05);
+    fill(255);
+    stroke(0);
+    strokeWeight(3);
+    textAlign(LEFT);
+    text('Starting time', width * 0.15, height * 0.5 + (size * 0.05) / 2);
+
+    toggles['time'] = new Toggle('time', createVector(width * 0.8, height * 0.5), createVector(size * 0.25, size * 0.05), settings.startTime, function () {
+      settings.startTime = this.output;
+      saveSettings();
+      score = 0;
+      time = settings.startTimes[settings.startTime]*1000;
+    }, 'options', Object.values(settings.startTimes)).display();
   }
 
 }
@@ -210,20 +237,24 @@ function drawShapes() {
 
   strokeWeight(2);
   stroke(0);
-
   textAlign(CENTER);
   textSize(size * 0.3);
   fill(90);
-  text('' + score, width / 2, height / 2);
 
-  if (settings.modes[settings.mode] == 'timed') {
-    textSize(size * 0.08);
-    fill(90);
-    text('Seconds: ' + (time / 1000).toPrecision(3), width / 2, height * 3 / 4);
+  if (settings.showText) {
+    text('' + score, width / 2, height / 2);
+  }
 
-    textSize(size * 0.08);
-    fill(90);
-    text('Highscore: ' + highscore, width / 2, height / 4);
+  if (settings.modes[settings.mode] == 'Timed') {
+    if (settings.showText) {
+      textSize(size * 0.08);
+      fill(90);
+      text('Seconds: ' + (time / 1000).toPrecision(3), width / 2, height * 3 / 4);
+
+      textSize(size * 0.08);
+      fill(90);
+      text('Highscore: ' + highscore[settings.startTimes[settings.startTime]], width / 2, height / 4);
+    }
   }
 
   noStroke();
@@ -246,11 +277,26 @@ function drawShapes() {
   ellipse(final_pos.x, final_pos.y, size * size_pct, size * size_pct);
 }
 
+function mouseClicked() {
+  if (settingsOn) {
+    for (let t of Object.getOwnPropertyNames(toggles)) {
+      toggles[t].onCall();
+    }
+  }
+  return false;
+}
+
 function touchStarted() {
   if (startGame) {
     shape.pressed();
   }
   touchDown = true;
+  if (settingsOn) {
+    for (let t of Object.getOwnPropertyNames(toggles)) {
+      toggles[t].onCall();
+    }
+  }
+
   return false;
 }
 
@@ -266,13 +312,17 @@ function touchEnded() {
 }
 
 function mousePressed() {
-  shape.pressed();
+  if (startGame) {
+    shape.pressed();
+  }
   touchDown = true;
   return false;
 }
 
 function mouseReleased() {
-  shape.released();
+  if (startGame) {
+    shape.released();
+  }
   if (!solved) {
     shape = new Draggable(point.x, point.y, size * size_pct, size * size_pct);
   }
@@ -310,3 +360,5 @@ async function analytics() {
   http.setRequestHeader('user', an)
   http.send();
 }
+
+const findLongest = words => Math.max(...(words.map(el => el.length)));
