@@ -27,7 +27,7 @@ let settingsOn = false;
 let settingsTime;
 
 let settingsModel = {
-  v: 1.4,
+  v: 2,
   showText: true,
   startTime: 0,
   startTimes: { 0: 2, 1: 5, 2: 10 },
