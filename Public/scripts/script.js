@@ -27,7 +27,7 @@ let settingsOn = false;
 let settingsTime;
 
 let settingsModel = {
-  v: 2.1,
+  v: 2.2,
   showText: true,
   startTime: 0,
   startTimes: { 0: 2, 1: 5, 2: 10 },
@@ -71,7 +71,7 @@ function setup() {
       time *= time_pct;
     }
   }
-  if(!localStorage.getItem('highscore').startsWith('{')){
+  if(localStorage.getItem('highscore') !=  null && !localStorage.getItem('highscore').startsWith('{')){
     highscore = {2:parseInt(localStorage.getItem('highscore')) || 0,5:0,10:0};
   }else{
     highscore = JSON.parse(localStorage.getItem('highscore'));
